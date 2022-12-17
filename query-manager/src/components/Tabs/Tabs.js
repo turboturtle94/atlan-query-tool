@@ -23,10 +23,10 @@ export const Tabs = ({ tabList, children, defaultTitle,activeIndex,...restProps 
 
 const TabWrapper = styled.div`
   border: 0.5px solid grey;
-  max-height: 90vw;
-  overflow-y: scroll;
   div.tab-list {
-    height: 20px;
+    height: 30px;
+    background-color: #f2f4f8;
+    padding: 4px;
   }
   div.tab-content{
     height: calc(100% - 20px);

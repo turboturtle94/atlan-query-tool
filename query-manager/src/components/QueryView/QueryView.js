@@ -149,8 +149,11 @@ const QueryViewWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px;
-  height: 70vh;
+  height: 80vh;
   font-size: 16px;
+  overflow-y: scroll;
+  background-color: #f2f4f8;
+  border-radius: 8px;
   div.no-data-div {
     display: flex;
     flex-direction: column;
@@ -192,6 +195,18 @@ const QueryViewWrapper = styled.div`
     }
     button {
       margin-right: 4px;
+      background-color: #2026d2;
+      color: white;
+      border: none;
+      width: 80px;
+      height: 30px;
+      border-radius: 2px;
+      cursor: pointer;
+      &:hover{
+        background-color: white;
+        border:#2026d2; 
+        color: #2026d2;
+      }
     }
   }
   input {
@@ -203,7 +218,7 @@ const QueryViewWrapper = styled.div`
     min-height: 28px;
   }
   textarea {
-    height: 50%;
+    height: 30%;
     border: 0.5px solid grey;
     margin-bottom: 8px;
     padding: 4px;

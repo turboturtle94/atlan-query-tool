@@ -2,15 +2,18 @@ import React, { useEffect } from "react";
 import { AiOutlineClose as Times, AiOutlinePlus as Plus } from "react-icons/ai";
 import styled from "styled-components";
 
-export const TabList = ({ tabList,defaultTitle,onNewTab,onActivateTab,onCloseTab }) => {
-  
-  useEffect(() => {
-
-  },[tabList])
+export const TabList = ({
+  tabList,
+  defaultTitle,
+  onNewTab,
+  onActivateTab,
+  onCloseTab,
+}) => {
+  useEffect(() => {}, [tabList]);
 
   const newTab = (event) => {
     event.stopPropagation();
-    if(tabList.length > 15){
+    if (tabList.length > 15) {
       alert("Maximum tab limit reached!");
       return;
     }
@@ -19,12 +22,12 @@ export const TabList = ({ tabList,defaultTitle,onNewTab,onActivateTab,onCloseTab
 
   const activateTab = (event, id) => {
     event.stopPropagation();
-    onActivateTab(id)
+    onActivateTab(id);
   };
 
   const closeTab = (event, id) => {
     event.stopPropagation();
-    onCloseTab(id)
+    onCloseTab(id);
   };
   return (
     <TabListWrapper>
@@ -56,6 +59,7 @@ export const TabList = ({ tabList,defaultTitle,onNewTab,onActivateTab,onCloseTab
         onClick={(event) => {
           newTab(event);
         }}
+        className="button-add"
       >
         <Plus></Plus>
       </button>
@@ -68,10 +72,16 @@ const TabListWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background-color: lightgray;
   button {
     border: none;
     background: none;
+    margin-left: 4px;
+    border-radius: 4px;
+    padding: 2px;
+    cursor: pointer;
+  }
+  button.button-add:hover {
+    background-color: lightgray;
   }
   ul {
     display: flex;
@@ -83,15 +93,23 @@ const TabListWrapper = styled.div`
       justify-content: flex-start;
       align-items: center;
       padding: 4px;
+      background-color: #f2f4f8;
+      margin-right: 2px;
+      border-radius: 4px;
+      padding: 4px;
       label {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-right: 4px;
       }
+      button {
+        color: black;
+      }
     }
     li.active {
       background-color: white;
+      box-shadow: 0px 1px 5px gray;
     }
   }
 `;
