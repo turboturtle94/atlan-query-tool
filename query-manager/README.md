@@ -6,6 +6,7 @@ react-data-grid - to get the table layout for data.
 react-switch - For toggle used in sort configuration.
 @radix-ui/react-popover - For Popover used on sort button
 react-icons - Used for various icons
+papa parse- to unparse json to csv
 
 
 
