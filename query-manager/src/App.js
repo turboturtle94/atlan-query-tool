@@ -20,6 +20,15 @@ function App() {
           currentStartIndex: 1,
         };
         newData.isPaginationEnabled = false;
+        newData.sortConfig = {
+          isDescending: false,
+          columnsToSort: [],
+          sortedColumns: [],
+        };
+        newData.exportedFile = {
+          name: "",
+          url: "",
+        };
         newState.push(newData);
         return newState;
       case "activate":
@@ -32,6 +41,16 @@ function App() {
           ...newState[id].paginationConfig,
           maxResults: newState[id].results.length,
         };
+        newState[id].sortConfig = {
+          isDescending: false,
+          columnsToSort: Object.keys(action.data[0]).map((item) => {
+            return {
+              name: item,
+              selected: false,
+            };
+          }),
+          sortedColumns: [],
+        };
         return newState;
       case "update title":
         newState[id].title = action.data;
@@ -43,7 +62,32 @@ function App() {
         newState[id].paginationConfig = action.data;
         return newState;
       case "toggle pagination":
-        newState[id].isPaginationEnabled  = !newState[id].isPaginationEnabled;
+        newState[id].isPaginationEnabled = !newState[id].isPaginationEnabled;
+        return newState;
+      case "update sort columns config":
+        let columnsToSort = newState[id].sortConfig.columnsToSort;
+        let modifiedColumn = columnsToSort.find(
+          (el) => el.name === action.data.name
+        );
+        modifiedColumn.selected = !modifiedColumn.selected;
+        return newState;
+      case "update sort type config":
+        newState[id].sortConfig.isDescending =
+          !newState[id].sortConfig.isDescending;
+        return newState;
+      case "toggle sorted columns":
+        if (action.data.selected) {
+          newState[id].sortConfig.sortedColumns.push({ ...action.data });
+        } else {
+          newState[id].sortConfig.sortedColumns = newState[
+            id
+          ].sortConfig.sortedColumns.filter(
+            (el) => el.name !== action.data.name
+          );
+        }
+        return newState;
+      case "generate file":
+        newState[id].exportedFile = { ...action.data };
         return newState;
       default:
         throw new Error("Invalid action dispatached");
@@ -56,13 +100,22 @@ function App() {
       query: "",
       results: [],
       active: true,
-      id:Date.now(),
+      id: Date.now(),
       paginationConfig: {
         resultsPerPage: 10,
         maxResults: 0,
         currentStartIndex: 1,
       },
-      isPaginationEnabled:false
+      sortConfig: {
+        columnsToSort: [],
+        isDescending: false,
+        sortedColumns: [],
+      },
+      isPaginationEnabled: false,
+      exportedFile: {
+        name: "",
+        url: "",
+      },
     },
   ]);
 

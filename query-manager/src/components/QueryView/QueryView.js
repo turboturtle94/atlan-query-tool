@@ -8,13 +8,39 @@ import { executeQuery } from "../../utils/QueryEngine";
 
 import { GiEmptyMetalBucket as Empty } from "react-icons/gi";
 
+import { sortData } from "./Sort";
+
+import Papa from "papaparse";
+
 export const QueryView = () => {
   const queryContext = useContext(QueryContext);
   const { dispatch, queryState } = queryContext;
-  const { title, query, results, paginationConfig, isPaginationEnabled } =
-    queryState.find((el) => el.active);
+  const {
+    title,
+    query,
+    results,
+    paginationConfig,
+    isPaginationEnabled,
+    sortConfig,
+    exportedFile,
+  } = queryState.find((el) => el.active);
   let { resultsPerPage } = paginationConfig;
   const [gridData, setGridData] = useState(results);
+
+  const exportData = (queryToDownload) => {
+    let title = queryToDownload.trim();
+    title = title !== "" ? title : "Sample";
+    const blob = new File([Papa.unparse(results)], title + ".csv", {
+      type: "text/csv",
+    });
+    dispatch({
+      type: "generate file",
+      data: {
+        name: title,
+        url: URL.createObjectURL(blob),
+      },
+    });
+  };
   const paginationCallBack = (startIndex, endIndex) => {
     dispatch({
       type: "update pagination",
@@ -23,7 +49,12 @@ export const QueryView = () => {
         currentStartIndex: startIndex,
       },
     });
-    setGridData(getResultSetWithinRange(startIndex, endIndex));
+    const finalData = sortData(
+      getResultSetWithinRange(startIndex, endIndex),
+      sortConfig.sortedColumns,
+      sortConfig.isDescending
+    );
+    setGridData(finalData);
   };
 
   const getResultSetWithinRange = useCallback(
@@ -43,16 +74,20 @@ export const QueryView = () => {
   );
 
   useEffect(() => {
-    const { paginationConfig, isPaginationEnabled } = queryState.find(
-      (el) => el.active
-    );
+    const { paginationConfig, isPaginationEnabled, sortConfig } =
+      queryState.find((el) => el.active);
     const { currentStartIndex, resultsPerPage, maxResults } = paginationConfig;
     let startIndex = currentStartIndex;
     let endIndex =
       isPaginationEnabled && resultsPerPage > 0
         ? startIndex + resultsPerPage - 1
         : maxResults;
-    setGridData(getResultSetWithinRange(startIndex, endIndex));
+    const finalData = sortData(
+      getResultSetWithinRange(startIndex, endIndex),
+      sortConfig.sortedColumns.map((el) => el.name),
+      sortConfig.isDescending
+    );
+    setGridData(finalData);
   }, [queryState, getResultSetWithinRange, gridData.length]);
   return (
     <QueryViewWrapper>
@@ -79,59 +114,75 @@ export const QueryView = () => {
           });
         }}
       ></textarea>
-      <div className="query-config">
-        <div className="query-actions">
-          <button
-            onClick={() => {
-              let queryResults = executeQuery(query);
-              dispatch({
-                type: "update data",
-                data: queryResults,
-              });
-            }}
-          >
-            Execute
-          </button>
-          <button>Export</button>
-        </div>
-        <div className="pagination-config">
-          <input
-            type="checkbox"
-            checked={isPaginationEnabled}
-            onChange={() => {
-              dispatch({
-                type: "toggle pagination",
-              });
-            }}
-          ></input>
-          <label>Enable pagination</label>
-          {isPaginationEnabled ? (
-            <span>
-              <input
-                type="input"
-                value={resultsPerPage}
-                onChange={(event) => {
-                  event.persist();
-                  dispatch({
-                    type: "update pagination",
-                    data: {
-                      ...paginationConfig,
-                      resultsPerPage: parseInt(event.target.value),
-                    },
-                  });
+      {query !== "" ? (
+        <div className="query-config">
+          <div className="query-actions">
+            <button
+              onClick={() => {
+                let queryResults = executeQuery(query);
+                dispatch({
+                  type: "update data",
+                  data: queryResults,
+                });
+              }}
+            >
+              Execute
+            </button>
+            {gridData.length > 0 ? (
+              <button
+                onClick={(event) => {
+                  event.preventDefault();
+                  exportData(title);
                 }}
-              />
-              <label>Rows per page</label>
-            </span>
-          ) : null}
+              >
+                Export
+              </button>
+            ) : null}
+            {exportedFile.url !== "" ? (
+              <a href={exportedFile.url}>{exportedFile.name}</a>
+            ) : null}
+          </div>
+          <div className="pagination-config">
+            <input
+              type="checkbox"
+              checked={isPaginationEnabled}
+              onChange={() => {
+                dispatch({
+                  type: "toggle pagination",
+                });
+              }}
+            ></input>
+            <label>Enable pagination</label>
+            {isPaginationEnabled ? (
+              <span>
+                <input
+                  type="input"
+                  value={resultsPerPage}
+                  onChange={(event) => {
+                    let value = parseInt(event.target.value);
+                    event.persist();
+                    dispatch({
+                      type: "update pagination",
+                      data: {
+                        ...paginationConfig,
+                        resultsPerPage: isNaN(value) ? 1 : value,
+                      },
+                    });
+                  }}
+                />
+                <label>Rows per page</label>
+              </span>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       {gridData.length > 0 ? (
         <Grid
           gridData={gridData}
           paginationConfig={paginationConfig}
           paginationCallBack={paginationCallBack}
           isPaginationEnabled={isPaginationEnabled}
+          sortConfig={sortConfig}
         />
       ) : (
         <div className="no-data-div">
@@ -202,9 +253,9 @@ const QueryViewWrapper = styled.div`
       height: 30px;
       border-radius: 2px;
       cursor: pointer;
-      &:hover{
+      &:hover {
         background-color: white;
-        border:#2026d2; 
+        border: #2026d2;
         color: #2026d2;
       }
     }

@@ -2,13 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import DataGrid from "react-data-grid";
 import { Pagination } from "./Pagination";
 
+import { GridDataConfig } from "./GridDataConfig";
+
 export const Grid = ({
   gridData,
   isPaginationEnabled,
   paginationCallBack,
   paginationConfig,
+  sortConfig
 }) => {
   const [rowsToBeDisplayed, setRowsToBeDisplayed] = useState(gridData);
+
   const { resultsPerPage, maxResults, currentStartIndex } =
     paginationConfig || {};
   const columns = useMemo(() => {
@@ -24,8 +28,12 @@ export const Grid = ({
   useEffect(() => {
     setRowsToBeDisplayed(gridData);
   }, [gridData]);
+
   return (
     <div>
+      <GridDataConfig
+        sortConfig={sortConfig}
+      ></GridDataConfig>
       <DataGrid columns={columns} rows={rowsToBeDisplayed} />
       {isPaginationEnabled ? (
         <Pagination

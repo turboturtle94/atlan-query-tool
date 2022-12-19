@@ -1,0 +1,50 @@
+div.popover__content-sort {
+    background-color: #f2f4f8;
+    border-radius: 4px;
+    padding: 10px;
+    min-width: 150px;
+}
+
+div.popover__content-sort input {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+div.columninput-container {
+    max-height: 100px;
+    overflow-y: scroll;
+    margin-bottom: 20px;
+}
+
+div.columninput-container ul>li {
+    list-style-type: none;
+}
+
+label.sort-type {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.selectedcolumns{
+    display: flex;
+    flex-wrap: wrap;
+    gap:4px;
+    width: 250px;
+}   
+
+div.selectedcolumns div{
+    border: 1px solid #2026d2;
+    padding: 6px;
+    border-radius: 20px;  
+    color: #2026d2;
+}
+
+div.selectedcolumns div button{
+    border: none;
+    color: #2026d2;
+    background: none;
+}
