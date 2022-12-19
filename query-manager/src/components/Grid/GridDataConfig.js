@@ -37,7 +37,7 @@ export const GridDataConfig = ({ sortConfig ,onSortCallBack}) => {
                 style={{ display: "flex", flexDirection: "column", gap: 10 }}
               >
                 <label className="sort-type">
-                  <span>Ascending</span>
+                  <span>Descending</span>
                   <Switch
                     uncheckedIcon={false}
                     checkedIcon={false}
